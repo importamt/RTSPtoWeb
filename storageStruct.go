@@ -51,7 +51,7 @@ type StorageST struct {
 
 //ServerST server storage section
 type ServerST struct {
-	ICEServers   []string     `json:"ice_servers"`
+	ICEServers   []string     `json:"ice_servers" groups:"config"`
 	Debug        bool         `json:"debug" groups:"api,config"`
 	LogLevel     logrus.Level `json:"log_level" groups:"api,config"`
 	HTTPDemo     bool         `json:"http_demo" groups:"api,config"`

@@ -1,6 +1,5 @@
 {
   "server": {
-    "ice_servers": ["stun:stun.l.google.com:19302"],
     "debug": true,
     "http_debug": true,
     "http_demo": true,
@@ -12,6 +11,9 @@
     "https_cert": "server.crt",
     "https_key": "server.key",
     "https_port": ":443",
+    "ice_servers": [
+      "stun:stun.l.google.com:19302"
+    ],
     "log_level": "debug",
     "rtsp_port": ":5541"
   },
@@ -59,6 +61,66 @@
         }
       },
       "name": "player2"
+    },
+    "test1": {
+      "channels": {
+        "hello": {
+          "name": "test1",
+          "on_demand": true,
+          "url": "rtsp://admin:admin@10.10.3.6/media/video1"
+        }
+      },
+      "name": "test1"
+    },
+    "test123": {
+      "channels": {
+        "hello": {
+          "name": "test123",
+          "on_demand": true,
+          "url": "rtsp://admin:admin@10.10.3.6/media/video1"
+        }
+      },
+      "name": "test123"
+    },
+    "test2": {
+      "channels": {
+        "hello": {
+          "name": "test2",
+          "on_demand": true,
+          "url": "rtsp://admin:admin@10.10.3.6/media/video1"
+        }
+      },
+      "name": "test2"
+    },
+    "test3": {
+      "channels": {
+        "hello": {
+          "name": "test3",
+          "on_demand": true,
+          "url": "rtsp://admin:admin@10.10.3.6/media/video1"
+        }
+      },
+      "name": "test3"
+    },
+    "testA": {
+      "channels": {
+        "hello": {
+          "name": "testA",
+          "on_demand": true,
+          "url": "rtsp://admin:admin@10.10.3.6/media/video1"
+        }
+      },
+      "name": "testA"
+    },
+    "testB": {
+      "channels": {
+        "hello": {
+          "name": "testB",
+          "on_demand": true,
+          "url": "rtsp://admin:admin@10.10.3.6/media/video1"
+        }
+      },
+      "name": "testB"
     }
   }
 }
