@@ -1,0 +1,102 @@
+<html>
+<head><title>TEST PLAYER</title></head>
+
+<body>
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-dark">Play webrtc video</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active">Play webrtc video</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</div>
+<div class="content">
+    <video id="videoPlayer" autoplay controls muted playsinline></video>
+    <canvas id="canvas" class="d-none"></canvas>
+</div>
+<script src="./static/plugins/jquery/jquery.min.js"></script>
+<script src="./static/js/adminlte.min.js"></script>
+<script src="./static/plugins/sweetalert2/sweetalert2.min.js"></script>
+<script src="./static/js/index.js"></script>
+
+<script>
+    let webrtc,webrtcSendChannel;
+
+    $(document).ready(()=>{
+        startPlay();
+    });
+    function startPlay(){
+        webrtc=new RTCPeerConnection({
+            iceServers: [{
+                urls: ["stun:stun.l.google.com:19302"]
+            }]
+        });
+        webrtc.onnegotiationneeded = async function handleNegotiationNeeded(){
+            let uuid=$('#uuid').val();
+            let channel=$('#channel').val();
+            let url ="/stream/demo/channel/0/webrtc?uuid=demo&channel=0";
+            // let url ="/stream/"+uuid+"/channel/"+channel+"/webrtc?uuid=" + uuid+'&channel='+channel;
+            let offer = await webrtc.createOffer();
+
+            await webrtc.setLocalDescription(offer);
+            $.post('http://localhost:8083' + url, {
+                data: btoa(webrtc.localDescription.sdp)
+            }, function(data) {
+                try {
+                    webrtc.setRemoteDescription(new RTCSessionDescription({
+                        type: 'answer',
+                        sdp: atob(data)
+                    }))
+                } catch (e) {
+                    console.warn(e);
+                }
+
+            });
+        }
+
+        webrtc.ontrack = function(event) {
+            const playerElement = document.getElementById('videoPlayer')
+            console.log(event.streams.length + ' track is delivered');
+            playerElement.srcObject = event.streams[0];
+            playerElement.play();
+        }
+
+        webrtc.addTransceiver('video', {
+            'direction': 'sendrecv'
+        });
+
+        webrtcSendChannel = webrtc.createDataChannel('foo');
+        webrtcSendChannel.onclose = () => console.log('sendChannel has closed');
+        webrtcSendChannel.onopen = () => {
+            console.log('sendChannel has opened');
+            webrtcSendChannel.send('ping');
+            webrtcSendChannelInterval =  setInterval(() => {
+                webrtcSendChannel.send('ping');
+            }, 1000)
+        }
+
+        webrtcSendChannel.onmessage = e => console.log(e.data);
+
+    }
+
+
+    $("#videoPlayer")[0].addEventListener('loadeddata', () => {
+        $("#videoPlayer")[0].play();
+        // makePic();
+    });
+
+    $("#videoPlayer")[0].addEventListener('error', () => {
+        console.log('video_error')
+    });
+</script>
+</body>
+</html>
+
+

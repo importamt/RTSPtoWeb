@@ -49,6 +49,12 @@ func (obj *StorageST) ServerHTTPLogin() string {
 	return obj.Server.HTTPLogin
 }
 
+func (obj *StorageST) GetICEServers() []string {
+	obj.mutex.Lock()
+	defer obj.mutex.Unlock()
+	return obj.Server.ICEServers
+}
+
 //ServerHTTPPassword read Password options
 func (obj *StorageST) ServerHTTPPassword() string {
 	obj.mutex.RLock()

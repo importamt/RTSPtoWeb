@@ -33,9 +33,10 @@
       });
       webrtc.onnegotiationneeded = handleNegotiationNeeded;
       webrtc.ontrack = function(event) {
+        const playerElement = document.getElementById('videoPlayer')
         console.log(event.streams.length + ' track is delivered');
-        $("#videoPlayer")[0].srcObject = event.streams[0];
-        $("#videoPlayer")[0].play();
+        playerElement.srcObject = event.streams[0];
+        playerElement.play();
       }
       webrtc.addTransceiver('video', {
         'direction': 'sendrecv'

@@ -1,32 +1,64 @@
 {
   "server": {
+    "ice_servers": ["stun:stun.l.google.com:19302"],
     "debug": true,
-    "http_debug": false,
+    "http_debug": true,
     "http_demo": true,
     "http_dir": "web",
-    "http_login": "demo",
-    "http_password": "demo",
+    "http_login": "rino",
+    "http_password": "rino",
     "http_port": ":8083",
-    "log_level": "debug",
-    "rtsp_port": ":5541",
     "https": false,
-    "https_port": ":443",
     "https_cert": "server.crt",
-    "https_key": "server.key"
+    "https_key": "server.key",
+    "https_port": ":443",
+    "log_level": "debug",
+    "rtsp_port": ":5541"
   },
   "streams": {
-    "demo": {
+    "96b3345e-55d2-4d85-ae67-f189ed784e79": {
       "channels": {
         "0": {
-          "debug": false,
-          "url": "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
-        },
-        "1": {
-          "debug": false,
-          "url": "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
+          "on_demand": true,
+          "url": "rtsp://admin:admin@10.10.3.6/media/video1"
         }
       },
-      "name": "fdgfdgdfg"
+      "name": "ESE"
+    },
+    "player0": {
+      "channels": {
+        "demo005": {
+          "name": "player0",
+          "on_demand": true,
+          "url": "rtsp://10.30.8.89:1935/live/STREAM_1602029011623.stream"
+        }
+      },
+      "name": "player0"
+    },
+    "player1": {
+      "channels": {
+        "demo005": {
+          "name": "player1",
+          "on_demand": true,
+          "url": "rtsp://10.30.8.89:1935/live/STREAM_1602028988806.stream"
+        },
+        "demo006": {
+          "name": "player1",
+          "on_demand": true,
+          "url": "rtsp://10.30.8.89:1935/live/STREAM_1602028988806.stream"
+        }
+      },
+      "name": "player1"
+    },
+    "player2": {
+      "channels": {
+        "demo007": {
+          "name": "player2",
+          "on_demand": true,
+          "url": "rtsp://10.30.8.89:1935/live/STREAM_1602029060613.stream"
+        }
+      },
+      "name": "player2"
     }
   }
 }

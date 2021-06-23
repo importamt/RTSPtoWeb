@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"time"
 
 	webrtc "github.com/deepch/vdk/format/webrtcv3"
@@ -11,7 +12,7 @@ import (
 //HTTPAPIServerStreamWebRTC stream video over WebRTC
 func HTTPAPIServerStreamWebRTC(c *gin.Context) {
 	if !Storage.StreamChannelExist(c.Param("uuid"), c.Param("channel")) {
-		c.IndentedJSON(500, Message{Status: 0, Payload: ErrorStreamNotFound.Error()})
+		c.JSON(http.StatusInternalServerError, Message{Status: 0, Payload: ErrorStreamNotFound.Error()})
 		log.WithFields(logrus.Fields{
 			"module":  "http_webrtc",
 			"stream":  c.Param("uuid"),
@@ -24,7 +25,7 @@ func HTTPAPIServerStreamWebRTC(c *gin.Context) {
 	Storage.StreamChannelRun(c.Param("uuid"), c.Param("channel"))
 	codecs, err := Storage.StreamChannelCodecs(c.Param("uuid"), c.Param("channel"))
 	if err != nil {
-		c.IndentedJSON(500, Message{Status: 0, Payload: err.Error()})
+		c.JSON(http.StatusInternalServerError, Message{Status: 0, Payload: err.Error()})
 		log.WithFields(logrus.Fields{
 			"module":  "http_webrtc",
 			"stream":  c.Param("uuid"),
@@ -34,10 +35,10 @@ func HTTPAPIServerStreamWebRTC(c *gin.Context) {
 		}).Errorln(err.Error())
 		return
 	}
-	muxerWebRTC := webrtc.NewMuxer(webrtc.Options{})
+	muxerWebRTC := webrtc.NewMuxer(webrtc.Options{ICEServers: Storage.GetICEServers(), PortMin: 45000, PortMax: 60000})
 	answer, err := muxerWebRTC.WriteHeader(codecs, c.PostForm("data"))
 	if err != nil {
-		c.IndentedJSON(400, Message{Status: 0, Payload: err.Error()})
+		c.JSON(http.StatusBadRequest, Message{Status: 0, Payload: err.Error()})
 		log.WithFields(logrus.Fields{
 			"module":  "http_webrtc",
 			"stream":  c.Param("uuid"),
@@ -49,7 +50,7 @@ func HTTPAPIServerStreamWebRTC(c *gin.Context) {
 	}
 	_, err = c.Writer.Write([]byte(answer))
 	if err != nil {
-		c.IndentedJSON(400, Message{Status: 0, Payload: err.Error()})
+		c.JSON(http.StatusBadRequest, Message{Status: 0, Payload: err.Error()})
 		log.WithFields(logrus.Fields{
 			"module":  "http_webrtc",
 			"stream":  c.Param("uuid"),
@@ -60,9 +61,13 @@ func HTTPAPIServerStreamWebRTC(c *gin.Context) {
 		return
 	}
 	go func() {
+		defer func() {
+			recover()
+		}()
+
 		cid, ch, _, err := Storage.ClientAdd(c.Param("uuid"), c.Param("channel"), WEBRTC)
 		if err != nil {
-			c.IndentedJSON(400, Message{Status: 0, Payload: err.Error()})
+			c.JSON(http.StatusBadRequest, Message{Status: 0, Payload: err.Error()})
 			log.WithFields(logrus.Fields{
 				"module":  "http_webrtc",
 				"stream":  c.Param("uuid"),
@@ -78,7 +83,7 @@ func HTTPAPIServerStreamWebRTC(c *gin.Context) {
 		for {
 			select {
 			case <-noVideo.C:
-				c.IndentedJSON(500, Message{Status: 0, Payload: ErrorStreamNoVideo.Error()})
+				c.JSON(http.StatusInternalServerError, Message{Status: 0, Payload: ErrorStreamNoVideo.Error()})
 				log.WithFields(logrus.Fields{
 					"module":  "http_webrtc",
 					"stream":  c.Param("uuid"),
